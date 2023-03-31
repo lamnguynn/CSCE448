@@ -7,7 +7,17 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
+
 def add_faces_to_dataset(X, y, faces, label):
+    '''
+    Add our own faces and labels to the dataset
+
+    :param X: features
+    :param y: labels
+    :param faces: list of face files to add
+    :param label: label to add
+    :return: revised features and label dataset
+    '''
     for face in faces:
         face_data = cv2.imread(face, cv2.IMREAD_GRAYSCALE)
         face_data_flatten = face_data.flatten()
@@ -17,7 +27,13 @@ def add_faces_to_dataset(X, y, faces, label):
 
     return X, y
 
+
 def prepare_dataset():
+    '''
+    Get the features and labels from the olivetti_faces, and adding our own features and lables to the dataset
+
+    :return: the features (x) and labels (y)
+    '''
     # Get features and labels from dataset
     data = fetch_olivetti_faces()
     X = data.data
@@ -31,14 +47,18 @@ def prepare_dataset():
 
     return X, y
 
-def visualize_faces(data):
-    plt.figure(figsize=(5, 8))
-    for i in range(1, 2):
-        plt.subplot(4, 5, i)
-        plt.imshow(data.images[i], cmap=plt.cm.gray)
-    plt.show()
 
 def try_with_own_faces(pca, svm, x, y):
+    '''
+    Make a prediction given our own test data
+
+    :param pca: pca model
+    :param svm: svm model
+    :param x: features
+    :param y: labels
+    :return: None
+    '''
+
     # Do prediction
     new_image = cv2.imread('images/selfie_test3.jpg', cv2.IMREAD_GRAYSCALE)
     flattened_image = new_image.flatten()
@@ -67,7 +87,17 @@ def try_with_own_faces(pca, svm, x, y):
 
         plt.show()
 
+
 def plot_n_components(X_train, X_test, y_train, y_test):
+    '''
+    Plot the effect that components have on the accuracy of the model
+
+    :param X_train: training features
+    :param X_test: testing features
+    :param y_train: training labels
+    :param y_test: testing labels
+    :return: None
+    '''
     n_components = [1, 3, 5, 10, 20, 40, 50]
     accuracies = []
     for n in n_components:
@@ -91,13 +121,14 @@ def plot_n_components(X_train, X_test, y_train, y_test):
     plt.plot(n_components, accuracies)
     plt.show()
 
+
 def main():
     # Training model with olivetti dataset and my own selfies
     X, y = prepare_dataset()
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    pca = PCA(n_components=100)
+    pca = PCA(n_components=80)
     pca.fit(X_train)
 
     X_train_pca = pca.transform(X_train)
